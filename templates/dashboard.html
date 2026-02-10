@@ -1,79 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iColleague - Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Dashboard - iColleague</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <h1>iColleague</h1>
-            </div>
-            <div class="nav-menu">
-                <a href="{{ url_for('dashboard') }}" class="nav-link active">Dashboard</a>
-                <a href="{{ url_for('contacts') }}" class="nav-link">Contacts</a>
-                <a href="{{ url_for('assistant') }}" class="nav-link">Assistant</a>
-                <a href="{{ url_for('status_formatter') }}" class="nav-link">Status Formatter</a>
-                <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
-            </div>
-        </div>
-    </nav>
 
-    <div class="container">
-        <div class="dashboard">
-            <div class="welcome-section">
-                <h2>Welcome back, {{ username }}!</h2>
-                <p>Your virtual employee assistant is ready to help you.</p>
-            </div>
+<div class="container">
+    <div class="card">
+        <h1>Welcome {{ username }}</h1>
+        <p class="subtitle">Dashboard</p>
 
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">👥</div>
-                    <h3>Internal Contacts</h3>
-                    <p>Search for employee contact information</p>
-                    <a href="{{ url_for('contacts') }}" class="btn btn-secondary">Search Contacts</a>
-                </div>
+        <a href="{{ url_for('contacts') }}">
+            <button>View Contacts</button>
+        </a>
 
-                <div class="feature-card">
-                    <div class="feature-icon">🤖</div>
-                    <h3>Company Assistant</h3>
-                    <p>Ask questions about policies & benefits</p>
-                    <a href="{{ url_for('assistant') }}" class="btn btn-secondary">Ask Assistant</a>
-                </div>
+        <a href="{{ url_for('assistant') }}">
+            <button>Ask Assistant</button>
+        </a>
 
-                <div class="feature-card">
-                    <div class="feature-icon">📝</div>
-                    <h3>Status Formatter</h3>
-                    <p>Format your daily status updates</p>
-                    <a href="{{ url_for('status_formatter') }}" class="btn btn-secondary">Format Status</a>
-                </div>
-            </div>
+        <a href="{{ url_for('status_formatter') }}">
+            <button>Status Formatter</button>
+        </a>
 
-            <div class="quick-stats">
-                <h3>Quick Information</h3>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <h4>IT Support</h4>
-                        <p>ext. 5557</p>
-                    </div>
-                    <div class="stat-item">
-                        <h4>HR</h4>
-                        <p>hr@techcorp.in</p>
-                    </div>
-                    <div class="stat-item">
-                        <h4>Emergency</h4>
-                        <p>Security: ext. 9111</p>
-                    </div>
-                    <div class="stat-item">
-                        <h4>Cafeteria</h4>
-                        <p>Ground Floor</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <a href="{{ url_for('logout') }}">
+            <button style="background:red;">Logout</button>
+        </a>
     </div>
+</div>
+
 </body>
 </html>
