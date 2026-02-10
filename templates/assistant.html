@@ -1,16 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Assistant</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
 </head>
 <body>
 <div class="container">
-<div class="login-container">
-<h1>Assistant Page</h1>
-<a href="{{ url_for('dashboard') }}">Back</a>
+<h2>Assistant</h2>
+<input id="question">
+<button onclick="ask()">Ask</button>
+<p id="answer"></p>
 </div>
-</div>
+
+<script>
+function ask(){
+fetch("/ask",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},
+body:"question="+document.getElementById("question").value})
+.then(r=>r.json())
+.then(d=>{
+document.getElementById("answer").innerText=d.response;
+});
+}
+</script>
 </body>
 </html>
+
