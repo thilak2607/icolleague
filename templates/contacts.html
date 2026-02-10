@@ -1,118 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iColleague - Contact Search</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<title>Contacts</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <h1>iColleague</h1>
-            </div>
-            <div class="nav-menu">
-                <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
-                <a href="{{ url_for('contacts') }}" class="nav-link active">Contacts</a>
-                <a href="{{ url_for('assistant') }}" class="nav-link">Assistant</a>
-                <a href="{{ url_for('status_formatter') }}" class="nav-link">Status Formatter</a>
-                <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container">
-        <div class="page-header">
-            <h2>Internal Contact Search</h2>
-            <p>Find employee contact information quickly</p>
-        </div>
-
-        <div class="search-container">
-            <div class="search-form">
-                <input type="text" id="searchInput" placeholder="Search by name or department...">
-                <button onclick="searchContacts()" class="btn btn-primary">Search</button>
-                <button onclick="clearSearch()" class="btn btn-secondary">Clear</button>
-            </div>
-        </div>
-
-        <div class="results-container">
-            <div id="searchResults" class="contact-list">
-                <p class="no-results">Enter a search term to find contacts</p>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function searchContacts() {
-            const searchTerm = document.getElementById('searchInput').value;
-            const resultsDiv = document.getElementById('searchResults');
-            
-            resultsDiv.innerHTML = '<div class="loading">Searching...</div>';
-            
-            fetch('/search_contacts', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'search_term=' + encodeURIComponent(searchTerm)
-            })
-            .then(response => response.json())
-            .then(data => {
-                displayResults(data);
-            })
-            .catch(error => {
-                resultsDiv.innerHTML = '<p class="error">Error searching contacts</p>';
-            });
-        }
-
-        function displayResults(contacts) {
-            const resultsDiv = document.getElementById('searchResults');
-            
-            if (contacts.length === 0) {
-                resultsDiv.innerHTML = '<p class="no-results">No contacts found</p>';
-                return;
-            }
-            
-            let html = '<div class="contact-grid">';
-            contacts.forEach(contact => {
-                html += `
-                    <div class="contact-card">
-                        <div class="contact-name">${contact.name}</div>
-                        <div class="contact-detail">
-                            <span class="label">Email:</span>
-                            <a href="mailto:${contact.email}">${contact.email}</a>
-                        </div>
-                        <div class="contact-detail">
-                            <span class="label">Department:</span>
-                            ${contact.department}
-                        </div>
-                        <div class="contact-detail">
-                            <span class="label">Phone:</span>
-                            ${contact.phone}
-                        </div>
-                    </div>
-                `;
-            });
-            html += '</div>';
-            
-            resultsDiv.innerHTML = html;
-        }
-
-        function clearSearch() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('searchResults').innerHTML = '<p class="no-results">Enter a search term to find contacts</p>';
-        }
-
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchContacts();
-            }
-        });
-
-        window.onload = function() {
-            searchContacts();
-        };
-    </script>
+<div class="container">
+<div class="login-container">
+<h1>Contacts Page</h1>
+<a href="{{ url_for('dashboard') }}">Back</a>
+</div>
+</div>
 </body>
 </html>
