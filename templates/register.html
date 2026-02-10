@@ -1,41 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>iColleague - Register</title>
+    <title>Register</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-
 <div class="container">
-    <div class="card">
-        <h1>iColleague</h1>
-        <p class="subtitle">Employee Assistant Platform</p>
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <form method="POST">
-            <label>Username</label>
-            <input type="text" name="username" required>
-
-            <label>Password</label>
-            <input type="password" name="password" required>
-
-            <button type="submit">Register</button>
-        </form>
-
-        <p class="link">
-            Already have an account?
-            <a href="{{ url_for('login') }}">Login here</a>
-        </p>
-    </div>
+    <h2>Register</h2>
+    <form method="POST">
+        <input type="text" name="username" placeholder="Enter username" required>
+        <input type="password" name="password" placeholder="Enter password" required>
+        <button type="submit">Register</button>
+    </form>
+    <p>Already have account? <a href="{{ url_for('login') }}">Login</a></p>
 </div>
-
 </body>
 </html>
+
