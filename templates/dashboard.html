@@ -1,33 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard - iColleague</title>
+    <title>Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-
 <div class="container">
-    <div class="card">
-        <h1>Welcome {{ username }}</h1>
-        <p class="subtitle">Dashboard</p>
-
-        <a href="{{ url_for('contacts') }}">
-            <button>View Contacts</button>
-        </a>
-
-        <a href="{{ url_for('assistant') }}">
-            <button>Ask Assistant</button>
-        </a>
-
-        <a href="{{ url_for('status_formatter') }}">
-            <button>Status Formatter</button>
-        </a>
-
-        <a href="{{ url_for('logout') }}">
-            <button style="background:red;">Logout</button>
-        </a>
-    </div>
+    <h2>Welcome {{ username }}</h2>
+    <p>Dashboard working successfully 🎉</p>
+    <a href="{{ url_for('logout') }}">Logout</a>
 </div>
-
 </body>
 </html>
+
