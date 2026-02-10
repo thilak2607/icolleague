@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import re
 
 app = Flask(__name__)
-app.secret_key = "super-secret-key-change-this"
+app.secret_key = "super-secret-key"
 
 DATABASE = "icolleague.db"
 
@@ -39,27 +39,25 @@ def init_db():
         )
     """)
 
-    # Insert employees only if table empty
-    existing = conn.execute("SELECT COUNT(*) FROM employees").fetchone()[0]
+    count = conn.execute("SELECT COUNT(*) FROM employees").fetchone()[0]
 
-    if existing == 0:
-        sample_employees = [
-            ('Rajesh Kumar', 'rajesh.kumar@techcorp.in', 'Engineering', '+91-98765-43210'),
-            ('Priya Sharma', 'priya.sharma@techcorp.in', 'Human Resources', '+91-98765-43211'),
-            ('Amit Patel', 'amit.patel@techcorp.in', 'Marketing', '+91-98765-43212'),
-            ('Anjali Reddy', 'anjali.reddy@techcorp.in', 'Finance', '+91-98765-43213'),
+    if count == 0:
+        employees = [
+            ('Rajesh Kumar', 'rajesh@techcorp.in', 'Engineering', '+91-98765-43210'),
+            ('Priya Sharma', 'priya@techcorp.in', 'HR', '+91-98765-43211'),
+            ('Amit Patel', 'amit@techcorp.in', 'Marketing', '+91-98765-43212'),
+            ('Anjali Reddy', 'anjali@techcorp.in', 'Finance', '+91-98765-43213')
         ]
 
         conn.executemany(
             "INSERT INTO employees (name, email, department, phone) VALUES (?, ?, ?, ?)",
-            sample_employees
+            employees
         )
 
     conn.commit()
     conn.close()
 
 
-# IMPORTANT: run DB init always (for Render)
 init_db()
 
 
@@ -71,6 +69,8 @@ def index():
         return redirect(url_for("dashboard"))
     return redirect(url_for("login"))
 
+
+# -------- LOGIN -------- #
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -87,7 +87,6 @@ def login():
         if user and check_password_hash(user["password"], password):
             session["user_id"] = user["id"]
             session["username"] = user["username"]
-            flash("Login successful!", "success")
             return redirect(url_for("dashboard"))
         else:
             flash("Invalid username or password", "error")
@@ -95,15 +94,13 @@ def login():
     return render_template("login.html")
 
 
+# -------- REGISTER -------- #
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-
-        if not username or not password:
-            flash("Username and password required", "error")
-            return render_template("register.html")
 
         hashed = generate_password_hash(password)
 
@@ -115,15 +112,14 @@ def register():
             )
             conn.commit()
             conn.close()
-
-            flash("Registration successful!", "success")
             return redirect(url_for("login"))
-
         except sqlite3.IntegrityError:
             flash("Username already exists", "error")
 
     return render_template("register.html")
 
+
+# -------- DASHBOARD -------- #
 
 @app.route("/dashboard")
 def dashboard():
@@ -132,15 +128,86 @@ def dashboard():
     return render_template("dashboard.html", username=session["username"])
 
 
+# -------- CONTACTS -------- #
+
+@app.route("/contacts")
+def contacts():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db_connection()
+    employees = conn.execute("SELECT * FROM employees").fetchall()
+    conn.close()
+
+    return render_template("contacts.html", employees=employees)
+
+
+# -------- ASSISTANT -------- #
+
+@app.route("/assistant")
+def assistant():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    return render_template("assistant.html")
+
+
+@app.route("/ask_assistant", methods=["POST"])
+def ask_assistant():
+    question = request.form.get("question", "").lower()
+
+    knowledge = {
+        "leave": "Submit leave request via HR portal.",
+        "salary": "Salary credited last working day of month.",
+        "holiday": "Company holidays include national festivals.",
+        "it": "Contact IT support at ext. 5557."
+    }
+
+    response = "Please contact HR for more details."
+
+    for key in knowledge:
+        if key in question:
+            response = knowledge[key]
+            break
+
+    return jsonify({"response": response})
+
+
+# -------- STATUS FORMATTER -------- #
+
+@app.route("/status_formatter")
+def status_formatter():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    return render_template("status_formatter.html")
+
+
+@app.route("/format_status", methods=["POST"])
+def format_status():
+    text = request.form.get("rough_text", "")
+
+    cleaned = re.sub(r"\s+", " ", text.strip())
+    sentences = re.split(r"[.!?]+", cleaned)
+    sentences = [s.strip() for s in sentences if s.strip()]
+
+    bullets = "\n".join([f"• {s.capitalize()}." for s in sentences[:5]])
+
+    return jsonify({
+        "formatted_status": f"Daily Update - {session['username']}\n\n{bullets}"
+    })
+
+
+# -------- LOGOUT -------- #
+
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("login"))
 
 
-# ---------------- RUN ---------------- #
+# -------- RUN -------- #
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
 
 
