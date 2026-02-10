@@ -5,136 +5,85 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import re
 
 app = Flask(__name__)
-app.secret_key = 'super-secret-key-change-this'
+app.secret_key = "supersecretkey"
 
-# ---------------- DATABASE ---------------- #
+DATABASE = "icolleague.db"
 
-def get_db_connection():
-    conn = sqlite3.connect('icolleague.db')
+def get_db():
+    conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
 
 def init_db():
-    if not os.path.exists('icolleague.db'):
-        conn = get_db_connection()
-
-        conn.execute('''
+    if not os.path.exists(DATABASE):
+        conn = get_db()
+        conn.execute("""
             CREATE TABLE users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,
                 password TEXT NOT NULL
             )
-        ''')
-
-        conn.execute('''
-            CREATE TABLE employees (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                email TEXT NOT NULL,
-                department TEXT NOT NULL,
-                phone TEXT NOT NULL
-            )
-        ''')
-
-        sample_employees = [
-            ('Rajesh Kumar', 'rajesh.kumar@techcorp.in', 'Engineering', '+91-98765-43210'),
-            ('Priya Sharma', 'priya.sharma@techcorp.in', 'Human Resources', '+91-98765-43211'),
-            ('Amit Patel', 'amit.patel@techcorp.in', 'Marketing', '+91-98765-43212'),
-        ]
-
-        conn.executemany(
-            'INSERT INTO employees (name, email, department, phone) VALUES (?, ?, ?, ?)',
-            sample_employees
-        )
-
+        """)
         conn.commit()
         conn.close()
 
-# IMPORTANT: Run DB init for Render
 init_db()
 
-# ---------------- ROUTES ---------------- #
+@app.route("/")
+def home():
+    if "user_id" in session:
+        return redirect(url_for("dashboard"))
+    return redirect(url_for("login"))
 
-@app.route('/')
-def index():
-    if 'user_id' in session:
-        return redirect(url_for('dashboard'))
-    return redirect(url_for('login'))
-
-# ---------------- LOGIN ---------------- #
-
-@app.route('/login', methods=['GET', 'POST'])
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
 
-        conn = get_db_connection()
-        user = conn.execute(
-            'SELECT * FROM users WHERE username = ?', 
-            (username,)
-        ).fetchone()
+        conn = get_db()
+        user = conn.execute("SELECT * FROM users WHERE username=?", (username,)).fetchone()
         conn.close()
 
-        if user and check_password_hash(user['password'], password):
-            session['user_id'] = user['id']
-            session['username'] = user['username']
-            flash('Login successful!', 'success')
-            return redirect(url_for('dashboard'))
+        if user and check_password_hash(user["password"], password):
+            session["user_id"] = user["id"]
+            session["username"] = user["username"]
+            return redirect(url_for("dashboard"))
         else:
-            flash('Invalid username or password', 'error')
+            flash("Invalid username or password", "error")
 
-    return render_template('login.html')
+    return render_template("login.html")
 
-# ---------------- REGISTER ---------------- #
-
-@app.route('/register', methods=['GET', 'POST'])
+@app.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
 
-        if not username or not password:
-            flash('All fields are required', 'error')
-            return render_template('register.html')
-
-        hashed_password = generate_password_hash(password)
+        hashed = generate_password_hash(password)
 
         try:
-            conn = get_db_connection()
-            conn.execute(
-                'INSERT INTO users (username, password) VALUES (?, ?)',
-                (username, hashed_password)
-            )
+            conn = get_db()
+            conn.execute("INSERT INTO users (username, password) VALUES (?,?)", (username, hashed))
             conn.commit()
             conn.close()
+            return redirect(url_for("login"))
+        except:
+            flash("Username already exists", "error")
 
-            flash('Registration successful! Please login.', 'success')
-            return redirect(url_for('login'))
+    return render_template("register.html")
 
-        except sqlite3.IntegrityError:
-            flash('Username already exists', 'error')
-
-    return render_template('register.html')
-
-# ---------------- DASHBOARD ---------------- #
-
-@app.route('/dashboard')
+@app.route("/dashboard")
 def dashboard():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    return render_template("dashboard.html", username=session["username"])
 
-    return render_template('dashboard.html', username=session['username'])
-
-# ---------------- LOGOUT ---------------- #
-
-@app.route('/logout')
+@app.route("/logout")
 def logout():
     session.clear()
-    flash('Logged out successfully', 'info')
-    return redirect(url_for('login'))
+    return redirect(url_for("login"))
 
-# ---------------- RUN LOCAL ---------------- #
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
+
