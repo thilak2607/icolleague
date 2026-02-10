@@ -1,15 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Contacts</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 <div class="container">
-<div class="login-container">
-<h1>Contacts Page</h1>
-<a href="{{ url_for('dashboard') }}">Back</a>
+<h2>Search Contacts</h2>
+<input id="search">
+<button onclick="search()">Search</button>
+<div id="result"></div>
 </div>
-</div>
+
+<script>
+function search(){
+fetch("/search",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},
+body:"term="+document.getElementById("search").value})
+.then(r=>r.json())
+.then(data=>{
+let html="";
+data.forEach(e=>{
+html+=`<p>${e.name} - ${e.department}</p>`;
+});
+document.getElementById("result").innerHTML=html;
+});
+}
+</script>
 </body>
 </html>
+
