@@ -2,32 +2,32 @@ body {
     margin:0;
     font-family: Arial;
     background: linear-gradient(135deg,#667eea,#764ba2);
-    color:white;
 }
 
 .container {
-    width:400px;
-    margin:100px auto;
+    max-width:500px;
+    margin:80px auto;
     background:white;
-    padding:30px;
+    padding:40px;
     border-radius:10px;
-    color:black;
-    text-align:center;
 }
 
-input {
-    width:90%;
+input, button {
+    width:100%;
     padding:10px;
     margin:10px 0;
 }
-
 button {
-    padding:10px 20px;
     background:#667eea;
-    border:none;
     color:white;
-    border-radius:5px;
-    cursor:pointer;
+    border:none;
 }
-
-
+nav {
+    background:#333;
+    padding:10px;
+    text-align:center;
+}
+nav a {
+    color:white;
+    margin:10px;
+}
