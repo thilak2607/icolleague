@@ -3,86 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iColleague - Company Assistant</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>AI Assistant - iColleague</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <h1>iColleague</h1>
+    <div class="dashboard">
+        <!-- Sidebar (same as dashboard) -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="brand-name">iColleague</div>
+                </div>
             </div>
-            <div class="nav-menu">
-                <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
-                <a href="{{ url_for('contacts') }}" class="nav-link">Contacts</a>
-                <a href="{{ url_for('assistant') }}" class="nav-link active">Assistant</a>
-                <a href="{{ url_for('status_formatter') }}" class="nav-link">Status Formatter</a>
-                <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+            <div class="sidebar-nav">
+                <a href="{{ url_for('dashboard') }}" class="nav-item">
+                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('assistant') }}" class="nav-item active">
+                    <i class="nav-icon fas fa-robot"></i>
+                    <span>Assistant</span>
+                </a>
+                <a href="{{ url_for('contacts') }}" class="nav-item">
+                    <i class="nav-icon fas fa-address-book"></i>
+                    <span>Contacts</span>
+                </a>
+                <a href="{{ url_for('expenses') }}" class="nav-item">
+                    <i class="nav-icon fas fa-rupee-sign"></i>
+                    <span>Expenses</span>
+                </a>
+                <a href="{{ url_for('holidays') }}" class="nav-item">
+                    <i class="nav-icon fas fa-umbrella-beach"></i>
+                    <span>Holidays</span>
+                </a>
+                <a href="{{ url_for('logout') }}" class="nav-item" style="color: #ef4444; margin-top: 2rem;">
+                    <i class="nav-icon fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
             </div>
         </div>
-    </nav>
 
-    <div class="container">
-        <div class="page-header">
-            <h2>Company Information Assistant</h2>
-            <p>Ask questions about Indian company policies, benefits, and procedures</p>
-        </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div class="header-title">
+                    <h1><i class="fas fa-robot"></i> AI Assistant</h1>
+                    <p>Your virtual colleague for all work-related queries</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-outline" onclick="location.href='{{ url_for('dashboard') }}'">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </button>
+                </div>
+            </div>
 
-        <div class="assistant-container">
-            <div class="chat-interface">
-                <div class="chat-messages" id="chatMessages">
-                    <div class="message bot-message">
-                        <div class="message-content">
-                            <p>Hello! I'm here to help you with company information. You can ask me about:</p>
-                            <ul>
-                                <li>Indian holidays and festivals</li>
-                                <li>Benefits and salary structure</li>
-                                <li>IT support and facilities</li>
-                                <li>Meeting rooms and supplies</li>
-                                <li>Training and work policies</li>
-                                <li>PF, medical, and transportation</li>
-                                <li>And much more!</li>
-                            </ul>
+            <div class="row">
+                <!-- Chat Interface -->
+                <div class="col-8">
+                    <div class="card" style="height: 600px;">
+                        <div class="chat-container">
+                            <div class="chat-messages" id="chatMessages">
+                                <!-- Messages will be loaded here -->
+                                <div class="message">
+                                    <div class="message-content">
+                                        <p>Hello {{ employee.name.split(' ')[0] }}! 👋 I'm your iColleague assistant. How can I help you today?</p>
+                                        <p>You can ask me about:</p>
+                                        <ul>
+                                            <li>📅 Leaves and holidays</li>
+                                            <li>💰 Expenses and reimbursements</li>
+                                            <li>📋 Tasks and projects</li>
+                                            <li>👥 Employee contacts</li>
+                                            <li>🏢 Company policies</li>
+                                        </ul>
+                                    </div>
+                                    <div class="message-time">Just now</div>
+                                </div>
+                            </div>
+                            
+                            <div class="chat-input">
+                                <div class="input-group" style="display: flex; gap: 0.5rem;">
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="messageInput" 
+                                           placeholder="Type your question here...">
+                                    <button class="btn btn-primary" id="sendMessage">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                                <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                    <button class="btn btn-sm btn-outline quick-question" data-question="How many leaves do I have?">
+                                        <i class="fas fa-umbrella-beach"></i> Leave Balance
+                                    </button>
+                                    <button class="btn btn-sm btn-outline quick-question" data-question="How to submit expense?">
+                                        <i class="fas fa-rupee-sign"></i> Submit Expense
+                                    </button>
+                                    <button class="btn btn-sm btn-outline quick-question" data-question="What are my pending tasks?">
+                                        <i class="fas fa-tasks"></i> Pending Tasks
+                                    </button>
+                                    <button class="btn btn-sm btn-outline quick-question" data-question="When is next holiday?">
+                                        <i class="fas fa-calendar"></i> Next Holiday
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="chat-input">
-                    <input type="text" id="questionInput" placeholder="Ask about company policies..." 
-                           onkeypress="handleKeyPress(event)">
-                    <button onclick="askQuestion()" class="btn btn-primary">Ask</button>
-                </div>
-            </div>
+                <!-- Quick Help -->
+                <div class="col-4">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-lightbulb"></i> Quick Help</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <h4 style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Common Queries</h4>
+                                <ul style="font-size: 0.875rem; color: var(--text-primary); padding-left: 1.5rem;">
+                                    <li>"Apply for leave"</li>
+                                    <li>"Check my attendance"</li>
+                                    <li>"Submit travel expense"</li>
+                                    <li>"Team member contact"</li>
+                                    <li>"Company policy on WFH"</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="quick-questions">
-                <h3>Quick Questions</h3>
-                <div class="question-buttons">
-                    <button onclick="quickAsk('How do I request leave?')" class="btn btn-outline">Request Leave</button>
-                    <button onclick="quickAsk('What Indian holidays are there?')" class="btn btn-outline">Indian Holidays</button>
-                    <button onclick="quickAsk('How do I contact IT support?')" class="btn btn-outline">IT Support</button>
-                    <button onclick="quickAsk('What benefits are available?')" class="btn btn-outline">Benefits</button>
-                    <button onclick="quickAsk('How do I submit expenses?')" class="btn btn-outline">Expense Reports</button>
-                    <button onclick="quickAsk('Tell me about PF and medical?')" class="btn btn-outline">PF & Medical</button>
-                    <button onclick="quickAsk('What about transport and food?')" class="btn btn-outline">Transport & Food</button>
-                    <button onclick="quickAsk('How do I book meeting rooms?')" class="btn btn-outline">Meeting Rooms</button>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-bolt"></i> Quick Actions</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex flex-column gap-2">
+                                <button class="btn btn-outline btn-block" onclick="location.href='{{ url_for('expenses') }}'">
+                                    <i class="fas fa-plus"></i> New Expense
+                                </button>
+                                <button class="btn btn-outline btn-block">
+                                    <i class="fas fa-calendar-plus"></i> Book Meeting
+                                </button>
+                                <button class="btn btn-outline btn-block">
+                                    <i class="fas fa-file-alt"></i> Generate Report
+                                </button>
+                                <button class="btn btn-outline btn-block" onclick="location.href='{{ url_for('contacts') }}'">
+                                    <i class="fas fa-search"></i> Find Colleague
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        function askQuestion() {
-            const input = document.getElementById('questionInput');
-            const question = input.value.trim();
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageInput = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendMessage');
             
-            if (!question) return;
+            // Function to add message to chat
+            function addMessage(content, sender, isUser = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isUser ? 'user' : ''}`;
+                messageDiv.innerHTML = `
+                    <div class="message-content">
+                        <p>${content}</p>
+                    </div>
+                    <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                `;
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
             
-            addMessage(question, 'user');
-            input.value = '';
+            // Send message
+            async function sendMessage() {
+                const message = messageInput.value.trim();
+                if (!message) return;
+                
+                // Add user message
+                addMessage(message, 'user', true);
+                messageInput.value = '';
+                
+                // Send to server
+                try {
+                    const response = await fetch('/api/chat/send', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({message: message})
+                    });
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Add AI response
+                        setTimeout(() => {
+                            addMessage(result.response.message, 'iColleague Assistant', false);
+                        }, 1000);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    addMessage('Sorry, I encountered an error. Please try again.', 'iColleague Assistant', false);
+                }
+            }
             
-            const messagesDiv = document.getElementById('chatMessages');
-            const typingIndicator = document.createElement('div');
-            typingIndicator.className = 'message bot-message typing
+            // Event listeners
+            sendButton.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // Quick questions
+            document.querySelectorAll('.quick-question').forEach(button => {
+                button.addEventListener('click', function() {
+                    const question = this.dataset.question;
+                    messageInput.value = question;
+                    sendMessage();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
 
 
 
