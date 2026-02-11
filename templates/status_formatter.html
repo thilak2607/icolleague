@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
+<title>Status Formatter</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+<nav>
+<a href="{{ url_for('dashboard') }}">Dashboard</a>
+<a href="{{ url_for('logout') }}">Logout</a>
+</nav>
+
 <div class="container">
 <h2>Status Formatter</h2>
-<textarea id="text" rows="5" style="width:90%"></textarea><br>
-<button onclick="format()">Format</button>
-<pre id="output"></pre>
-</div>
 
-<script>
-function format(){
-fetch("/format",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},
-body:"text="+document.getElementById("text").value})
-.then(r=>r.json())
-.then(d=>{
-document.getElementById("output").innerText=d.formatted;
-});
-}
-</script>
+<form method="POST">
+<input name="text" placeholder="Enter status">
+<button>Format</button>
+</form>
+
+{% if formatted %}
+<pre>{{ formatted }}</pre>
+{% endif %}
+</div>
 </body>
 </html>
+
 
