@@ -1,22 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Dashboard</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-<nav>
-<a href="{{ url_for('contacts') }}">Contacts</a>
-<a href="{{ url_for('assistant') }}">Assistant</a>
-<a href="{{ url_for('status_formatter') }}">Status</a>
-<a href="{{ url_for('logout') }}">Logout</a>
-</nav>
-
+{% extends "base.html" %}
+{% block content %}
 <div class="container">
 <h2>Welcome {{ username }}</h2>
+<p>Your Employee Assistant is ready 🚀</p>
 </div>
-</body>
-</html>
+{% endblock %}
+
 
 
 
