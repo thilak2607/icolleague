@@ -1,86 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iColleague - Company Assistant</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<title>Assistant</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <h1>iColleague</h1>
-            </div>
-            <div class="nav-menu">
-                <a href="{{ url_for('dashboard') }}" class="nav-link">Dashboard</a>
-                <a href="{{ url_for('contacts') }}" class="nav-link">Contacts</a>
-                <a href="{{ url_for('assistant') }}" class="nav-link active">Assistant</a>
-                <a href="{{ url_for('status_formatter') }}" class="nav-link">Status Formatter</a>
-                <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
-            </div>
-        </div>
-    </nav>
+<nav>
+<a href="{{ url_for('dashboard') }}">Dashboard</a>
+<a href="{{ url_for('logout') }}">Logout</a>
+</nav>
 
-    <div class="container">
-        <div class="page-header">
-            <h2>Company Information Assistant</h2>
-            <p>Ask questions about Indian company policies, benefits, and procedures</p>
-        </div>
+<div class="container">
+<h2>Assistant</h2>
 
-        <div class="assistant-container">
-            <div class="chat-interface">
-                <div class="chat-messages" id="chatMessages">
-                    <div class="message bot-message">
-                        <div class="message-content">
-                            <p>Hello! I'm here to help you with company information. You can ask me about:</p>
-                            <ul>
-                                <li>Indian holidays and festivals</li>
-                                <li>Benefits and salary structure</li>
-                                <li>IT support and facilities</li>
-                                <li>Meeting rooms and supplies</li>
-                                <li>Training and work policies</li>
-                                <li>PF, medical, and transportation</li>
-                                <li>And much more!</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+<form method="POST">
+<input name="question" placeholder="Ask something">
+<button>Ask</button>
+</form>
 
-                <div class="chat-input">
-                    <input type="text" id="questionInput" placeholder="Ask about company policies..." 
-                           onkeypress="handleKeyPress(event)">
-                    <button onclick="askQuestion()" class="btn btn-primary">Ask</button>
-                </div>
-            </div>
+{% if response %}
+<p>{{ response }}</p>
+{% endif %}
+</div>
+</body>
+</html>
 
-            <div class="quick-questions">
-                <h3>Quick Questions</h3>
-                <div class="question-buttons">
-                    <button onclick="quickAsk('How do I request leave?')" class="btn btn-outline">Request Leave</button>
-                    <button onclick="quickAsk('What Indian holidays are there?')" class="btn btn-outline">Indian Holidays</button>
-                    <button onclick="quickAsk('How do I contact IT support?')" class="btn btn-outline">IT Support</button>
-                    <button onclick="quickAsk('What benefits are available?')" class="btn btn-outline">Benefits</button>
-                    <button onclick="quickAsk('How do I submit expenses?')" class="btn btn-outline">Expense Reports</button>
-                    <button onclick="quickAsk('Tell me about PF and medical?')" class="btn btn-outline">PF & Medical</button>
-                    <button onclick="quickAsk('What about transport and food?')" class="btn btn-outline">Transport & Food</button>
-                    <button onclick="quickAsk('How do I book meeting rooms?')" class="btn btn-outline">Meeting Rooms</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function askQuestion() {
-            const input = document.getElementById('questionInput');
-            const question = input.value.trim();
-            
-            if (!question) return;
-            
-            addMessage(question, 'user');
-            input.value = '';
-            
-            const messagesDiv = document.getElementById('chatMessages');
-            const typingIndicator = document.createElement('div');
-            typingIndicator.className = 'message bot-message typing
 
