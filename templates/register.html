@@ -17,22 +17,18 @@
                     </div>
                     <div>
                         <h1 class="auth-title">iColleague</h1>
-                        <p class="auth-subtitle">Join the team</p>
+                        <p class="auth-subtitle">Join your team</p>
                     </div>
                 </div>
-                <p>Create your employee account</p>
+                <p>Create your account</p>
             </div>
 
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ 'error' if category == 'error' else 'success' }}">
-                            <i class="fas fa-{{ 'exclamation-circle' if category == 'error' else 'check-circle' }}"></i>
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+            {% if error %}
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ error }}
+            </div>
+            {% endif %}
 
             <form method="POST" action="{{ url_for('register') }}">
                 <div class="form-group">
@@ -48,20 +44,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="employee_id">
-                        <i class="fas fa-id-badge"></i> Employee ID
-                    </label>
-                    <input type="text" 
-                           class="form-control" 
-                           id="employee_id" 
-                           name="employee_id" 
-                           placeholder="EMP001" 
-                           required>
-                </div>
-
-                <div class="form-group">
                     <label class="form-label" for="email">
-                        <i class="fas fa-envelope"></i> Company Email
+                        <i class="fas fa-envelope"></i> Email Address
                     </label>
                     <input type="email" 
                            class="form-control" 
@@ -79,42 +63,32 @@
                            class="form-control" 
                            id="password" 
                            name="password" 
-                           placeholder="Create a strong password" 
+                           placeholder="Create a password" 
                            required>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="confirm_password">
-                        <i class="fas fa-lock"></i> Confirm Password
+                    <label style="display: flex; align-items: center; gap: 5px; font-size: 14px;">
+                        <input type="checkbox" required>
+                        I agree to the <a href="#" style="color: var(--primary);">Terms & Conditions</a>
                     </label>
-                    <input type="password" 
-                           class="form-control" 
-                           id="confirm_password" 
-                           name="confirm_password" 
-                           placeholder="Confirm your password" 
-                           required>
                 </div>
 
-                <div class="form-group">
-                    <input type="checkbox" id="terms" required>
-                    <label for="terms">I agree to the <a href="#" style="color: var(--primary-color);">Terms & Conditions</a></label>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-block">
+                <button type="submit" class="btn btn-primary btn-block mt-2">
                     <i class="fas fa-user-plus"></i> Create Account
                 </button>
 
-                <div class="text-center mt-4">
+                <div class="text-center mt-3">
                     <p class="text-muted">Already have an account? 
-                        <a href="{{ url_for('login') }}" style="color: var(--primary-color);">Sign in here</a>
+                        <a href="{{ url_for('login') }}" style="color: var(--primary); font-weight: 600;">Sign in here</a>
                     </p>
                 </div>
             </form>
 
-            <div class="mt-4">
-                <div class="alert alert-warning">
-                    <i class="fas fa-info-circle"></i>
-                    Registration requires valid employee credentials. Contact HR for assistance.
+            <div class="mt-3">
+                <div class="alert alert-success" style="font-size: 12px; padding: 10px;">
+                    <i class="fas fa-lightbulb"></i>
+                    Use your company email for registration
                 </div>
             </div>
         </div>
