@@ -3,44 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iColleague - Login</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Login - iColleague</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <div class="login-container">
-            <div class="logo">
-                <h1>iColleague</h1>
-                <p>Employee Assistant Platform</p>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <div class="auth-logo-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div>
+                        <h1 class="auth-title">iColleague</h1>
+                        <p class="auth-subtitle">Virtual Employee Assistant</p>
+                    </div>
+                </div>
+                <p>Sign in to your account</p>
             </div>
-            
+
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                        <div class="alert alert-{{ 'error' if category == 'error' else 'success' }}">
+                            <i class="fas fa-{{ 'exclamation-circle' if category == 'error' else 'check-circle' }}"></i>
+                            {{ message }}
+                        </div>
                     {% endfor %}
                 {% endif %}
             {% endwith %}
-            
+
             <form method="POST" action="{{ url_for('login') }}">
                 <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required>
+                    <label class="form-label" for="email">
+                        <i class="fas fa-envelope"></i> Email Address
+                    </label>
+                    <input type="email" 
+                           class="form-control" 
+                           id="email" 
+                           name="email" 
+                           placeholder="employee@company.com" 
+                           required>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
+                    <label class="form-label" for="password">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <input type="password" 
+                           class="form-control" 
+                           id="password" 
+                           name="password" 
+                           placeholder="Enter your password" 
+                           required>
                 </div>
-                
-                <button type="submit" class="btn btn-primary">Login</button>
+
+                <div class="form-group d-flex justify-between align-center">
+                    <div>
+                        <input type="checkbox" id="remember">
+                        <label for="remember">Remember me</label>
+                    </div>
+                    <a href="#" style="font-size: 0.875rem; color: var(--primary-color);">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+
+                <div class="text-center mt-4">
+                    <p class="text-muted">Don't have an account? 
+                        <a href="{{ url_for('register') }}" style="color: var(--primary-color);">Register here</a>
+                    </p>
+                </div>
             </form>
-            
-            <p class="register-link">
-                Don't have an account? <a href="{{ url_for('register') }}">Register here</a>
-            </p>
+
+            <div class="mt-4">
+                <p class="text-center text-muted" style="font-size: 0.875rem;">
+                    <i class="fas fa-shield-alt"></i> Your data is securely encrypted
+                </p>
+            </div>
         </div>
     </div>
+
+    <script>
+        // Add eye toggle for password
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.createElement('i');
+            eyeIcon.className = 'fas fa-eye';
+            eyeIcon.style.position = 'absolute';
+            eyeIcon.style.right = '1rem';
+            eyeIcon.style.top = '50%';
+            eyeIcon.style.transform = 'translateY(-50%)';
+            eyeIcon.style.cursor = 'pointer';
+            eyeIcon.style.color = 'var(--text-light)';
+            
+            const passwordGroup = passwordInput.parentElement;
+            passwordGroup.style.position = 'relative';
+            passwordGroup.appendChild(eyeIcon);
+            
+            eyeIcon.addEventListener('click', function() {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    eyeIcon.className = 'fas fa-eye-slash';
+                } else {
+                    passwordInput.type = 'password';
+                    eyeIcon.className = 'fas fa-eye';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 
