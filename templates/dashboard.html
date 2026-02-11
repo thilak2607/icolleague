@@ -3,84 +3,471 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iColleague - Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>iColleague - Virtual Employee Assistant 🇮🇳</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e40af;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --light-bg: #f8fafc;
+            --dark-bg: #1e293b;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar-brand {
+            color: white !important;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            border: none;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stats-card {
+            background: linear-gradient(45deg, var(--primary), #3b82f6);
+            color: white;
+            border-radius: 15px;
+        }
+        
+        .employee-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #f59e0b, #f97316);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .task-priority-high {
+            border-left: 4px solid #ef4444;
+        }
+        
+        .task-priority-medium {
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .task-priority-low {
+            border-left: 4px solid #10b981;
+        }
+        
+        .holiday-badge {
+            background: linear-gradient(45deg, #10b981, #34d399);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .india-flag {
+            width: 24px;
+            height: 16px;
+            background: linear-gradient(to bottom, #ff9933 33%, white 33%, white 66%, #138808 66%);
+            border-radius: 2px;
+            display: inline-block;
+            margin-right: 10px;
+            position: relative;
+        }
+        
+        .india-flag::after {
+            content: "✸";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #000080;
+            font-size: 8px;
+        }
+        
+        .attendance-present {
+            background-color: #d1fae5;
+            color: #065f46;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        
+        .attendance-wfh {
+            background-color: #dbeafe;
+            color: #1e40af;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        
+        .project-progress {
+            height: 10px;
+            border-radius: 5px;
+            background-color: #e5e7eb;
+        }
+        
+        .project-progress-bar {
+            height: 100%;
+            border-radius: 5px;
+            background: linear-gradient(45deg, #10b981, #34d399);
+        }
+        
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            height: 100vh;
+            position: fixed;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar-item {
+            padding: 15px 20px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            margin-bottom: 5px;
+            color: #4b5563;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .sidebar-item:hover, .sidebar-item.active {
+            background: linear-gradient(45deg, #3b82f6, #1e40af);
+            color: white;
+        }
+        
+        .main-content {
+            margin-left: 260px;
+            padding: 20px;
+        }
+        
+        .chat-bot {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #10b981, #34d399);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+            cursor: pointer;
+            z-index: 1000;
+        }
+        
+        .currency {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <h1>iColleague</h1>
+    <!-- Sidebar -->
+    <div class="sidebar w-25 d-none d-lg-block">
+        <div class="p-4">
+            <div class="text-center mb-4">
+                <div class="india-flag d-inline-block"></div>
+                <h4 class="d-inline-block fw-bold">iColleague</h4>
+                <p class="text-muted">Virtual Employee Assistant</p>
             </div>
-            <div class="nav-menu">
-                <a href="{{ url_for('dashboard') }}" class="nav-link active">Dashboard</a>
-                <a href="{{ url_for('contacts') }}" class="nav-link">Contacts</a>
-                <a href="{{ url_for('assistant') }}" class="nav-link">Assistant</a>
-                <a href="{{ url_for('status_formatter') }}" class="nav-link">Status Formatter</a>
-                <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+            
+            <div class="employee-profile mb-4 text-center">
+                <div class="employee-avatar d-inline-flex mb-2">
+                    {{ employee.avatar }}
+                </div>
+                <h5>{{ employee.name }}</h5>
+                <p class="text-muted mb-1">{{ employee.role }}</p>
+                <p class="text-muted small">{{ employee.location }}</p>
+                <div class="badge bg-success">Performance: {{ employee.performance }}%</div>
+            </div>
+            
+            <nav class="mt-4">
+                <a href="/dashboard" class="sidebar-item active">
+                    <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                </a>
+                <a href="/tasks" class="sidebar-item">
+                    <i class="fas fa-tasks me-2"></i> Tasks
+                </a>
+                <a href="/meetings" class="sidebar-item">
+                    <i class="fas fa-calendar-alt me-2"></i> Meetings
+                </a>
+                <a href="/projects" class="sidebar-item">
+                    <i class="fas fa-project-diagram me-2"></i> Projects
+                </a>
+                <a href="/attendance" class="sidebar-item">
+                    <i class="fas fa-fingerprint me-2"></i> Attendance
+                </a>
+                <a href="/expenses" class="sidebar-item">
+                    <i class="fas fa-rupee-sign me-2"></i> Expenses
+                </a>
+                <a href="/holidays" class="sidebar-item">
+                    <i class="fas fa-umbrella-beach me-2"></i> Holidays
+                </a>
+                <a href="#" class="sidebar-item">
+                    <i class="fas fa-chart-line me-2"></i> Reports
+                </a>
+                <a href="#" class="sidebar-item">
+                    <i class="fas fa-cog me-2"></i> Settings
+                </a>
+            </nav>
+            
+            <!-- Upcoming Holidays -->
+            <div class="mt-5">
+                <h6 class="fw-bold">Upcoming Holidays 🇮🇳</h6>
+                {% for holiday in holidays %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>{{ holiday.name }}</span>
+                    <span class="badge bg-warning">{{ holiday.date }}</span>
+                </div>
+                {% endfor %}
             </div>
         </div>
-    </nav>
+    </div>
 
-    <div class="container">
-        <div class="dashboard">
-            <div class="welcome-section">
-                <h2>Welcome back, {{ username }}!</h2>
-                <p>Your virtual employee assistant is ready to help you.</p>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="text-white fw-bold">Welcome, {{ employee.name }}!</h2>
+                <p class="text-white-50">Today: {{ current_date }} | {{ employee.emp_id }}</p>
+            </div>
+            <div class="d-flex align-items-center">
+                <div class="me-3">
+                    <span class="text-white">Bangalore: 25°C ☀️</span>
+                </div>
+                <button class="btn btn-light" id="punchAttendance">
+                    <i class="fas fa-fingerprint me-2"></i>Punch In/Out
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="dashboard-card p-3 stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50">Active Tasks</h6>
+                            <h2 class="text-white mb-0">{{ tasks|length }}</h2>
+                        </div>
+                        <i class="fas fa-tasks fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card p-3" style="background: linear-gradient(45deg, #f59e0b, #f97316); color: white;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50">This Month Salary</h6>
+                            <h2 class="text-white mb-0">₹1,25,000</h2>
+                        </div>
+                        <i class="fas fa-rupee-sign fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card p-3" style="background: linear-gradient(45deg, #10b981, #34d399); color: white;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50">Leaves Balance</h6>
+                            <h2 class="text-white mb-0">12 Days</h2>
+                        </div>
+                        <i class="fas fa-umbrella-beach fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card p-3" style="background: linear-gradient(45deg, #8b5cf6, #a78bfa); color: white;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50">Projects</h6>
+                            <h2 class="text-white mb-0">{{ projects|length }}</h2>
+                        </div>
+                        <i class="fas fa-project-diagram fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks and Meetings -->
+        <div class="row">
+            <!-- Pending Tasks -->
+            <div class="col-lg-6">
+                <div class="dashboard-card p-3 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold">Pending Tasks</h5>
+                        <a href="/tasks" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    {% for task in tasks %}
+                    <div class="task-item p-3 mb-2 task-priority-{{ task.priority|lower }} dashboard-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="fw-bold mb-1">{{ task.title }}</h6>
+                                <p class="text-muted small mb-2">{{ task.description }}</p>
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-secondary me-2">{{ task.project }}</span>
+                                    <span class="badge bg-info me-2">Due: {{ task.due_date }}</span>
+                                    <span class="badge bg-warning">{{ task.priority }}</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-sm btn-success mark-complete" data-task-id="{{ task.id }}">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                        <div class="progress mt-2" style="height: 5px;">
+                            <div class="progress-bar bg-success" style="width: {{ (task.actual_hours/task.estimated_hours)*100 }}%"></div>
+                        </div>
+                        <small class="text-muted">{{ task.actual_hours }}/{{ task.estimated_hours }} hours</small>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
 
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">👥</div>
-                    <h3>Internal Contacts</h3>
-                    <p>Search for employee contact information</p>
-                    <a href="{{ url_for('contacts') }}" class="btn btn-secondary">Search Contacts</a>
+            <!-- Upcoming Meetings -->
+            <div class="col-lg-6">
+                <div class="dashboard-card p-3 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold">Today's Meetings</h5>
+                        <a href="/meetings" class="btn btn-sm btn-outline-primary">Schedule</a>
+                    </div>
+                    {% for meeting in meetings %}
+                    <div class="meeting-item p-3 mb-2 dashboard-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="fw-bold mb-1">{{ meeting.title }}</h6>
+                                <p class="text-muted small mb-2">
+                                    <i class="fas fa-clock me-1"></i>{{ meeting.time }} | 
+                                    <i class="fas fa-map-marker-alt ms-2 me-1"></i>{{ meeting.location }}
+                                </p>
+                                <div>
+                                    {% for participant in meeting.participants %}
+                                    <span class="badge bg-light text-dark me-1">{{ participant }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% if meeting.zoom_link %}
+                            <a href="{{ meeting.zoom_link }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-video"></i> Join
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
 
-                <div class="feature-card">
-                    <div class="feature-icon">🤖</div>
-                    <h3>Company Assistant</h3>
-                    <p>Ask questions about policies & benefits</p>
-                    <a href="{{ url_for('assistant') }}" class="btn btn-secondary">Ask Assistant</a>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">📝</div>
-                    <h3>Status Formatter</h3>
-                    <p>Format your daily status updates</p>
-                    <a href="{{ url_for('status_formatter') }}" class="btn btn-secondary">Format Status</a>
+                <!-- Active Projects -->
+                <div class="dashboard-card p-3">
+                    <h5 class="fw-bold mb-3">Active Projects</h5>
+                    {% for project in projects %}
+                    <div class="project-item mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <h6 class="fw-bold">{{ project.name }}</h6>
+                            <span class="badge bg-info">{{ project.client }}</span>
+                        </div>
+                        <p class="text-muted small mb-2">{{ project.technologies|join(', ') }}</p>
+                        <div class="project-progress mb-2">
+                            <div class="project-progress-bar" style="width: {{ project.progress }}%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <small class="text-muted">Progress: {{ project.progress }}%</small>
+                            <small class="currency">Budget: {{ project.budget }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="quick-stats">
-                <h3>Quick Information</h3>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <h4>IT Support</h4>
-                        <p>ext. 5557</p>
+    <!-- Chat Bot -->
+    <div class="chat-bot" data-bs-toggle="modal" data-bs-target="#chatModal">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <!-- Chat Modal -->
+    <div class="modal fade" id="chatModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-robot me-2"></i>iColleague Assistant
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="chat-messages p-3" style="height: 300px; overflow-y: auto;">
+                        <div class="message bot mb-3">
+                            <div class="d-flex">
+                                <div class="employee-avatar me-2">🤖</div>
+                                <div>
+                                    <div class="p-3 bg-light rounded">
+                                        <p class="mb-0">Hello! I'm your virtual assistant. How can I help you today?</p>
+                                    </div>
+                                    <small class="text-muted">Just now</small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-item">
-                        <h4>HR</h4>
-                        <p>hr@techcorp.in</p>
-                    </div>
-                    <div class="stat-item">
-                        <h4>Emergency</h4>
-                        <p>Security: ext. 9111</p>
-                    </div>
-                    <div class="stat-item">
-                        <h4>Cafeteria</h4>
-                        <p>Ground Floor</p>
+                    <div class="input-group mt-3">
+                        <input type="text" class="form-control" placeholder="Ask about tasks, leaves, expenses...">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Punch Attendance
+            document.getElementById('punchAttendance').addEventListener('click', async function() {
+                const response = await fetch('/api/attendance/punch', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({type: 'punch'})
+                });
+                const result = await response.json();
+                alert('Attendance punched successfully at ' + result.timestamp);
+            });
+            
+            // Mark task complete
+            document.querySelectorAll('.mark-complete').forEach(button => {
+                button.addEventListener('click', async function() {
+                    const taskId = this.dataset.taskId;
+                    const response = await fetch('/api/tasks/update', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({task_id: taskId, status: 'Completed'})
+                    });
+                    const result = await response.json();
+                    if(result.success) {
+                        this.closest('.task-item').remove();
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
-
-
-
-
-
-
-
