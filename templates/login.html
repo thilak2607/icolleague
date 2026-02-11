@@ -1,21 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Login</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
+{% block content %}
 <div class="container">
 <h2>Login</h2>
 <form method="POST">
 <input name="username" placeholder="Username" required>
-<input type="password" name="password" placeholder="Password" required>
+<input name="password" type="password" placeholder="Password" required>
 <button>Login</button>
 </form>
 <a href="{{ url_for('register') }}">Register</a>
 </div>
-</body>
-</html>
+{% endblock %}
+
 
 
 
