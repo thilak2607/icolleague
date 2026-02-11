@@ -20,19 +20,15 @@
                         <p class="auth-subtitle">Virtual Employee Assistant</p>
                     </div>
                 </div>
-                <p>Sign in to your account</p>
+                <p>Sign in to continue</p>
             </div>
 
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ 'error' if category == 'error' else 'success' }}">
-                            <i class="fas fa-{{ 'exclamation-circle' if category == 'error' else 'check-circle' }}"></i>
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+            {% if error %}
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ error }}
+            </div>
+            {% endif %}
 
             <form method="POST" action="{{ url_for('login') }}">
                 <div class="form-group">
@@ -44,7 +40,8 @@
                            id="email" 
                            name="email" 
                            placeholder="employee@company.com" 
-                           required>
+                           required
+                           value="rajesh@company.com">
                 </div>
 
                 <div class="form-group">
@@ -56,60 +53,65 @@
                            id="password" 
                            name="password" 
                            placeholder="Enter your password" 
-                           required>
+                           required
+                           value="password123">
                 </div>
 
-                <div class="form-group d-flex justify-between align-center">
-                    <div>
+                <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+                    <label style="display: flex; align-items: center; gap: 5px;">
                         <input type="checkbox" id="remember">
-                        <label for="remember">Remember me</label>
-                    </div>
-                    <a href="#" style="font-size: 0.875rem; color: var(--primary-color);">Forgot password?</a>
+                        <span style="font-size: 14px;">Remember me</span>
+                    </label>
+                    <a href="#" style="font-size: 14px; color: var(--primary);">Forgot password?</a>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-block">
+                <button type="submit" class="btn btn-primary btn-block mt-2">
                     <i class="fas fa-sign-in-alt"></i> Sign In
                 </button>
 
-                <div class="text-center mt-4">
+                <div class="text-center mt-3">
                     <p class="text-muted">Don't have an account? 
-                        <a href="{{ url_for('register') }}" style="color: var(--primary-color);">Register here</a>
+                        <a href="{{ url_for('register') }}" style="color: var(--primary); font-weight: 600;">Register here</a>
                     </p>
                 </div>
             </form>
 
-            <div class="mt-4">
-                <p class="text-center text-muted" style="font-size: 0.875rem;">
-                    <i class="fas fa-shield-alt"></i> Your data is securely encrypted
-                </p>
+            <div class="mt-3">
+                <div class="alert alert-success" style="font-size: 12px; padding: 10px;">
+                    <i class="fas fa-info-circle"></i>
+                    Demo: Use <strong>rajesh@company.com</strong> / <strong>password123</strong>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Add eye toggle for password
+        // Show/hide password
         document.addEventListener('DOMContentLoaded', function() {
             const passwordInput = document.getElementById('password');
-            const eyeIcon = document.createElement('i');
-            eyeIcon.className = 'fas fa-eye';
-            eyeIcon.style.position = 'absolute';
-            eyeIcon.style.right = '1rem';
-            eyeIcon.style.top = '50%';
-            eyeIcon.style.transform = 'translateY(-50%)';
-            eyeIcon.style.cursor = 'pointer';
-            eyeIcon.style.color = 'var(--text-light)';
+            const toggleBtn = document.createElement('button');
+            toggleBtn.type = 'button';
+            toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+            toggleBtn.style.position = 'absolute';
+            toggleBtn.style.right = '15px';
+            toggleBtn.style.top = '50%';
+            toggleBtn.style.transform = 'translateY(-50%)';
+            toggleBtn.style.background = 'none';
+            toggleBtn.style.border = 'none';
+            toggleBtn.style.color = 'var(--gray)';
+            toggleBtn.style.cursor = 'pointer';
             
             const passwordGroup = passwordInput.parentElement;
             passwordGroup.style.position = 'relative';
-            passwordGroup.appendChild(eyeIcon);
+            passwordGroup.appendChild(toggleBtn);
             
-            eyeIcon.addEventListener('click', function() {
+            toggleBtn.addEventListener('click', function() {
                 if (passwordInput.type === 'password') {
                     passwordInput.type = 'text';
-                    eyeIcon.className = 'fas fa-eye-slash';
+                    toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
                 } else {
                     passwordInput.type = 'password';
-                    eyeIcon.className = 'fas fa-eye';
+                    toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
                 }
             });
         });
