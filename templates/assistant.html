@@ -1,17 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Assistant</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-<nav>
-<a href="{{ url_for('dashboard') }}">Dashboard</a>
-<a href="{{ url_for('logout') }}">Logout</a>
-</nav>
-
+{% extends "base.html" %}
+{% block content %}
 <div class="container">
-<h2>Assistant</h2>
+<h2>Company Assistant</h2>
 
 <form method="POST">
 <input name="question" placeholder="Ask something">
@@ -22,7 +12,7 @@
 <p>{{ response }}</p>
 {% endif %}
 </div>
-</body>
-</html>
+{% endblock %}
+
 
 
