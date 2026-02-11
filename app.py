@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import sqlite3
@@ -6,9 +6,10 @@ import os
 import re
 
 app = Flask(__name__)
-app.secret_key = "super-secret-key"
+app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
 
-DATABASE = "icolleague.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATABASE = os.path.join(BASE_DIR, "icolleague.db")
 
 
 # ================= DATABASE =================
@@ -25,8 +26,8 @@ def init_db():
     conn.execute("""
         CREATE TABLE IF NOT EXISTS users(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE,
-            password TEXT
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL
         )
     """)
 
@@ -47,7 +48,7 @@ def init_db():
             ("Rajesh Kumar","rajesh@techcorp.in","Engineering","+91-9876543210"),
             ("Priya Sharma","priya@techcorp.in","HR","+91-9876543211"),
             ("Amit Patel","amit@techcorp.in","Marketing","+91-9876543212"),
-            ("Anjali Reddy","anjali@techcorp.in","Finance","+91-9876543213")
+            ("Anjali Reddy","anjali@techcorp.in","Finance","+91-9876543213"),
         ]
         conn.executemany(
             "INSERT INTO employees (name,email,department,phone) VALUES (?,?,?,?)",
@@ -61,12 +62,13 @@ def init_db():
 init_db()
 
 
-# ================= LOGIN REQUIRED =================
+# ================= AUTH DECORATOR =================
 
 def login_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         if "user_id" not in session:
+            flash("Please login first","error")
             return redirect(url_for("login"))
         return f(*args, **kwargs)
     return wrapper
@@ -76,32 +78,31 @@ def login_required(f):
 
 @app.route("/")
 def home():
-    if "user_id" in session:
-        return redirect(url_for("dashboard"))
-    return redirect(url_for("login"))
+    return redirect(url_for("dashboard")) if "user_id" in session else redirect(url_for("login"))
 
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["GET","POST"])
 def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
 
         conn = get_db()
-        user = conn.execute("SELECT * FROM users WHERE username=?", (username,)).fetchone()
+        user = conn.execute("SELECT * FROM users WHERE username=?",(username,)).fetchone()
         conn.close()
 
         if user and check_password_hash(user["password"], password):
             session["user_id"] = user["id"]
             session["username"] = user["username"]
+            flash("Login successful!","success")
             return redirect(url_for("dashboard"))
         else:
-            flash("Invalid username or password")
+            flash("Invalid credentials","error")
 
     return render_template("login.html")
 
 
-@app.route("/register", methods=["GET", "POST"])
+@app.route("/register", methods=["GET","POST"])
 def register():
     if request.method == "POST":
         username = request.form["username"]
@@ -109,12 +110,13 @@ def register():
 
         try:
             conn = get_db()
-            conn.execute("INSERT INTO users (username,password) VALUES (?,?)", (username, password))
+            conn.execute("INSERT INTO users (username,password) VALUES (?,?)",(username,password))
             conn.commit()
             conn.close()
+            flash("Registration successful!","success")
             return redirect(url_for("login"))
-        except:
-            flash("Username already exists")
+        except sqlite3.IntegrityError:
+            flash("Username already exists","error")
 
     return render_template("register.html")
 
@@ -125,26 +127,27 @@ def dashboard():
     return render_template("dashboard.html", username=session["username"])
 
 
-@app.route("/contacts", methods=["GET", "POST"])
+@app.route("/contacts", methods=["GET","POST"])
 @login_required
 def contacts():
     conn = get_db()
-    search = request.form.get("search")
 
+    search = request.form.get("search","")
     if search:
         employees = conn.execute("""
             SELECT * FROM employees
             WHERE LOWER(name) LIKE ?
             OR LOWER(department) LIKE ?
-        """, (f"%{search.lower()}%", f"%{search.lower()}%")).fetchall()
+        """,(f"%{search.lower()}%",f"%{search.lower()}%")).fetchall()
     else:
         employees = conn.execute("SELECT * FROM employees").fetchall()
 
     conn.close()
+
     return render_template("contacts.html", employees=employees)
 
 
-@app.route("/assistant", methods=["GET", "POST"])
+@app.route("/assistant", methods=["GET","POST"])
 @login_required
 def assistant():
     response = None
@@ -153,23 +156,23 @@ def assistant():
         question = request.form["question"].lower()
 
         knowledge = {
-            "leave": "Submit leave via HR portal.",
-            "salary": "Salary credited last working day.",
-            "it": "Contact IT at ext 5557.",
-            "holiday": "Check HR portal for holiday calendar."
+            "leave":"Submit leave request via HR portal.",
+            "salary":"Salary credited on last working day.",
+            "it":"Contact IT at ext 5557.",
+            "holiday":"Check HR portal for holiday calendar."
         }
 
-        response = "Sorry, no information found."
+        response = "Sorry, I don't have information about that."
 
-        for key in knowledge:
+        for key, value in knowledge.items():
             if key in question:
-                response = knowledge[key]
+                response = value
                 break
 
     return render_template("assistant.html", response=response)
 
 
-@app.route("/status_formatter", methods=["GET", "POST"])
+@app.route("/status_formatter", methods=["GET","POST"])
 @login_required
 def status_formatter():
     formatted = None
@@ -177,13 +180,12 @@ def status_formatter():
     if request.method == "POST":
         text = request.form["text"]
         text = re.sub(r'\s+', ' ', text.strip())
-
         formatted = f"""Daily Status Update - {session['username']}
 
 • {text}
 
 Next Steps:
-• Continue tasks
+• Continue assigned tasks
 • Resolve blockers
 """
 
@@ -198,6 +200,7 @@ def logout():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
 
 
