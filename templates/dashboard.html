@@ -161,4 +161,144 @@
                         <a href="#" class="btn btn-sm btn-outline">Schedule</a>
                     </div>
                     <div>
-                       
+                        {% for meeting in meetings %}
+                        <div class="meeting-item">
+                            <div class="meeting-info">
+                                <h4>{{ meeting.title }}</h4>
+                                <p><i class="fas fa-clock"></i> {{ meeting.time }}</p>
+                            </div>
+                            <a href="{{ meeting.link }}" class="btn btn-sm btn-primary" target="_blank">
+                                <i class="fas fa-video"></i> Join
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Holidays & Quick Actions -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 25px;">
+                <!-- Holidays -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Upcoming Holidays</h3>
+                    </div>
+                    <div>
+                        {% for holiday in holidays %}
+                        <div class="meeting-item">
+                            <div class="meeting-info">
+                                <h4>{{ holiday.name }}</h4>
+                                <p>{{ holiday.date }} • {{ holiday.type }}</p>
+                            </div>
+                            <span class="badge badge-warning">
+                                <i class="fas fa-calendar-star"></i>
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Quick Actions</h3>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <button class="btn btn-outline" onclick="location.href='{{ url_for('assistant') }}'">
+                            <i class="fas fa-robot"></i> Ask Assistant
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fas fa-file-alt"></i> Apply Leave
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fas fa-download"></i> Download Payslip
+                        </button>
+                        <button class="btn btn-outline" onclick="location.href='{{ url_for('contacts') }}'">
+                            <i class="fas fa-users"></i> Find Colleague
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fas fa-chart-line"></i> Reports
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fas fa-cog"></i> Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Bot -->
+    <div class="chat-bot" onclick="location.href='{{ url_for('assistant') }}'">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <style>
+        .chat-bot {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 5px 20px rgba(59, 130, 246, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+            transition: transform 0.3s;
+        }
+        
+        .chat-bot:hover {
+            transform: scale(1.1);
+        }
+    </style>
+
+    <script>
+        // Punch attendance
+        document.getElementById('punchBtn').addEventListener('click', async function() {
+            const response = await fetch('/api/attendance/punch', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                this.innerHTML = `<i class="fas fa-fingerprint"></i> Punched at ${result.time}`;
+                this.disabled = true;
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-fingerprint"></i> Punch Out';
+                    this.disabled = false;
+                }, 5000);
+            }
+        });
+        
+        // Complete task
+        document.querySelectorAll('.complete-btn').forEach(button => {
+            button.addEventListener('click', async function() {
+                const taskId = this.dataset.taskId;
+                const response = await fetch(`/api/tasks/${taskId}/complete`, {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    this.innerHTML = '<i class="fas fa-check"></i> Completed';
+                    this.disabled = true;
+                    this.classList.remove('btn-success');
+                    this.classList.add('btn-outline');
+                    
+                    // Update status badge
+                    const statusBadge = this.previousElementSibling;
+                    statusBadge.textContent = 'Completed';
+                    statusBadge.className = 'task-status status-completed';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
