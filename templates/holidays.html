@@ -1,0 +1,71 @@
+<!-- holidays.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Holidays - iColleague</title>
+    <style>
+        .holiday-card {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            border: 2px solid #f59e0b;
+            border-radius: 15px;
+        }
+        .festival-badge {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+        .state-holiday {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center mb-4">🇮🇳 Indian Holidays 2024</h2>
+        
+        <div class="row">
+            <!-- Public Holidays -->
+            <div class="col-md-6">
+                <div class="dashboard-card p-3 mb-4">
+                    <h4 class="fw-bold">Public Holidays</h4>
+                    {% for holiday in holidays if holiday.type == "Public Holiday" %}
+                    <div class="holiday-card p-3 mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5>{{ holiday.name }}</h5>
+                                <p class="mb-0">{{ holiday.date }}</p>
+                                <span class="festival-badge badge">National Holiday</span>
+                            </div>
+                            <div class="display-4">
+                                {% if "Diwali" in holiday.name %}🪔
+                                {% elif "Holi" in holiday.name %}🎨
+                                {% elif "Independence" in holiday.name %}🇮🇳
+                                {% else %}🎉{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Regional Holidays -->
+            <div class="col-md-6">
+                <div class="dashboard-card p-3 mb-4">
+                    <h4 class="fw-bold">Regional Holidays</h4>
+                    <!-- Add regional holidays for different states -->
+                    <div class="state-holiday p-3 mb-2">
+                        <h5>Pongal</h5>
+                        <p class="mb-0">January 15, 2024 | Tamil Nadu</p>
+                    </div>
+                    <div class="state-holiday p-3 mb-2">
+                        <h5>Bihu</h5>
+                        <p class="mb-0">April 14, 2024 | Assam</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
